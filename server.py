@@ -1,5 +1,8 @@
 import socket, threading
+import json
 from math import *
+
+
 
 class ClientThread(threading.Thread):
     def __init__(self, clientAddress, clientsocket):
@@ -10,15 +13,15 @@ class ClientThread(threading.Thread):
         operation = ''
         while True:
             data = self.csocket.recv(1024)
-            operation = data.decode()
+            answer = data.decode()
 
-            if operation == 'exit()':
+            if answer == 'exit()':
                 print("[Connection terminated.]")
                 break
 
-            result = eval(operation)
+            result = eval(answer)
 
-            print ("RECEIVED: ", operation)
+            print ("RECEIVED: ", answer)
             print ("RETURNED: ", result)
 
             self.csocket.send(bytes(str(result),'UTF-8'))
