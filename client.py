@@ -21,7 +21,6 @@ layout = [
 ]
 window = sg.Window('Kahoot!?', layout)
 
-layout = 1
 while True:
     event, values = window.read()
     if event == sg.WIN_CLOSED:
