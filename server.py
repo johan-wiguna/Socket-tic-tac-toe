@@ -17,7 +17,7 @@ score2 = 0
 rows, cols = (3, 3)
 arr = [[0 for i in range(cols)] for j in range(rows)]
 clicked = False # True: Giliran X, False: Giliran O
-clickCount = 0
+#clickCount = 0
 roundCount = 0
 def check_draw():
     draw = True
@@ -66,12 +66,26 @@ def btn_clicked(b):
             b["text"] = "X"
             b["fg"] = "blue"
             clicked = False
-            clickCount += 1
+            #clickCount += 1
+            row = b.grid_info()['row']-2
+            column = b.grid_info()['column']
+            arr[row][column] = 1
+            print(arr)
         else:
             b["text"] = "O"
             b["fg"] = "red"
             clicked = True
-            clickCount += 1
+            #clickCount += 1
+            row = b.grid_info()['row']-2
+            column = b.grid_info()['column']
+            arr[row][column] = 2
+            print(arr)
+        if(check_win()==1):
+            print("player 1 win")
+        elif(check_win()==2):
+            print("player 2 win")
+        elif(check_draw()==True):
+            print("draw")
     else:
         messagebox.showerror("Misclicked", "Please click an empty box.")
 
