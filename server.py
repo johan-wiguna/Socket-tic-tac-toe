@@ -2,7 +2,9 @@ import socket, threading
 import json
 from math import *
 
-
+LOCALHOST = socket.gethostbyname(socket.gethostname())
+PORT = 5050
+ADDR = (LOCALHOST, PORT)
 
 class ClientThread(threading.Thread):
     def __init__(self, clientAddress, clientsocket):
@@ -26,10 +28,6 @@ class ClientThread(threading.Thread):
 
             self.csocket.send(bytes(str(result),'UTF-8'))
         print ("[Client at ", clientAddress , " disconnected...]")
-
-LOCALHOST = socket.gethostbyname(socket.gethostname())
-PORT = 5050
-ADDR = (LOCALHOST, PORT)
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)

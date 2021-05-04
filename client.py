@@ -1,7 +1,10 @@
 import PySimpleGUI as sg
 import socket
+
 LOCALHOST = socket.gethostbyname(socket.gethostname())
 PORT = 5050
+ADDR = (LOCALHOST, PORT)
+
 sg.theme('Dark Gray 5')
 layoutGame = [
     [sg.Text("", justification='center', size=(50,3), key='_QUESTION_')],
