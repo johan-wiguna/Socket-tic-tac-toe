@@ -7,20 +7,22 @@ PORT = 5050
 ADDR = (LOCALHOST, PORT)
 
 clicked = True # True: Giliran X, False: Giliran O
-count = 0
+clickCount = 0
+roundCount = 0
 
 def btn_clicked(b):
     global clicked, count
     if b["text"] == "":
         if clicked == True:
             b["text"] = "X"
+            b["fg"] = "blue"
             clicked = False
-            count += 1
+            clickCount += 1
         else:
             b["text"] = "O"
             b["fg"] = "red"
             clicked = True
-            count += 1
+            clickCount += 1
     else:
         messagebox.showerror("Misclicked", "Please click an empty box.")
 
@@ -59,7 +61,5 @@ while True:
     event, values = window.read()
     if event == sg.WIN_CLOSED:
         break
-    
-    
     
 window.close()
