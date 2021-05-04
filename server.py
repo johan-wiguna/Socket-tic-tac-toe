@@ -19,15 +19,6 @@ clicked = False # True: Giliran X, False: Giliran O
 clickCount = 0
 roundCount = 1
 
-def check_draw():
-    draw = True
-    for i in range(len(arr)):
-        for j in range(len(arr[i])):
-            if(arr[i][j]==0):
-                draw = False
-                return draw
-    return draw
-
 def check_win():
     #vertical
     for i in range(len(arr)):
@@ -84,7 +75,7 @@ def btn_clicked(b):
             print("player 1 win")
         elif(check_win()==2):
             print("player 2 win")
-        elif(check_draw()==True):
+        elif(clickCount==9):
             print("draw")
     else:
         messagebox.showerror("Misclicked", "Please click an empty box.")
