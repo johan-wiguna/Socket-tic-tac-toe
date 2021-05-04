@@ -11,7 +11,7 @@ clickCount = 0
 roundCount = 0
 
 def btn_clicked(b):
-    global clicked, count
+    global clicked, clickCount
     if b["text"] == "":
         if clicked == True:
             b["text"] = "X"

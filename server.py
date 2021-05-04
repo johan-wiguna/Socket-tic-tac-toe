@@ -11,14 +11,14 @@ server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 server.bind(ADDR)
 print("[Server is starting...]")
 
-ronde = 1
 score1 = 0 
 score2 = 0
 rows, cols = (3, 3)
 arr = [[0 for i in range(cols)] for j in range(rows)]
 clicked = False # True: Giliran X, False: Giliran O
-#clickCount = 0
-roundCount = 0
+clickCount = 0
+roundCount = 1
+
 def check_draw():
     draw = True
     for i in range(len(arr)):
@@ -60,13 +60,13 @@ def check_win():
         return a
 
 def btn_clicked(b):
-    global clicked, count
+    global clicked, clickCount
     if b["text"] == "":
         if clicked == True:
             b["text"] = "X"
             b["fg"] = "blue"
             clicked = False
-            #clickCount += 1
+            clickCount += 1
             row = b.grid_info()['row']-2
             column = b.grid_info()['column']
             arr[row][column] = 1
@@ -75,7 +75,7 @@ def btn_clicked(b):
             b["text"] = "O"
             b["fg"] = "red"
             clicked = True
-            #clickCount += 1
+            clickCount += 1
             row = b.grid_info()['row']-2
             column = b.grid_info()['column']
             arr[row][column] = 2
@@ -90,7 +90,7 @@ def btn_clicked(b):
         messagebox.showerror("Misclicked", "Please click an empty box.")
 
 root = Tk()
-root.title('[CLIENT] Tic Tac Toe')
+root.title('[SERVER] Tic Tac Toe')
 
 lYou = Label(root, text="You: ...", font=("Helvetica", 10))
 lEnemy = Label(root, text="Enemy: ...", font=("Helvetica", 10))
