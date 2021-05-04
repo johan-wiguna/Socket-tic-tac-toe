@@ -15,7 +15,7 @@ score1 = 0
 score2 = 0
 rows, cols = (3, 3)
 arr = [[0 for i in range(cols)] for j in range(rows)]
-clicked = False # True: Giliran X, False: Giliran O
+clicked = True # True: Giliran X, False: Giliran O
 clickCount = 0
 roundCount = 1
 
@@ -51,7 +51,7 @@ def check_win():
         return a
 
 def btn_clicked(b):
-    global clicked, clickCount
+    global clicked, clickCount, bRematch
     if b["text"] == "":
         if clicked == True:
             b["text"] = "X"
@@ -71,12 +71,18 @@ def btn_clicked(b):
             column = b.grid_info()['column']
             arr[row][column] = 2
             print(arr)
+
         if(check_win()==1):
             print("player 1 win")
+            score1 += 1
+            bRematch.config(state="normal", bg="red", fg="white")
         elif(check_win()==2):
             print("player 2 win")
+            score2 += 2
+            bRematch.config(state="normal", bg="red", fg="white")
         elif(clickCount==9):
             print("draw")
+            bRematch.config(state="normal", bg="red", fg="white")
     else:
         messagebox.showerror("Misclicked", "Please click an empty box.")
 
