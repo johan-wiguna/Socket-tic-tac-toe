@@ -78,7 +78,7 @@ def btn_clicked(b):
             bRematch.config(state="normal", bg="red", fg="white")
         elif(check_win()==2):
             print("player 2 win")
-            score2 += 2
+            score2 += 1
             bRematch.config(state="normal", bg="red", fg="white")
         elif(clickCount==9):
             print("draw")
