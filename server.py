@@ -25,7 +25,7 @@ def check_win():
         a = arr[i][0]
         b = arr[i][1]
         c = arr[i][2]
-        if((a==b) and (b==c)):
+        if((a==b) and (b==c) and a != 0):
             return a
     
     #horizontal
@@ -33,21 +33,21 @@ def check_win():
         a = arr[0][i]
         b = arr[1][i]
         c = arr[2][i]
-        if((a==b) and (b==c)):
+        if((a==b) and (b==c) and a != 0):
             return a
 
     #diagonal \
     a = arr[0][0]
     b = arr[1][1]
     c = arr[2][2]
-    if((a==b) and (b==c)):
+    if((a==b) and (b==c) and a != 0):
         return a
 
     #diagonal /
     a = arr[0][2]
     b = arr[1][1]
     c = arr[2][0]
-    if((a==b) and (b==c)):
+    if((a==b) and (b==c) and a != 0):
         return a
 
 def btn_clicked(b):
