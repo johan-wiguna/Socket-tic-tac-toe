@@ -51,7 +51,7 @@ def check_win():
         return a
 
 def btn_clicked(b):
-    global clicked, clickCount, bRematch
+    global clicked, clickCount, bRematch, score1, score2
     if b["text"] == "":
         if clicked == True:
             b["text"] = "X"
