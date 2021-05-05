@@ -61,7 +61,7 @@ def check_win():
 
 def btn_clicked(b):
     global isFirst, clickCount, bRematch, score1, score2, lResult, b0, b1, b2, b3, b4, b5, b6, b7, b8
-    if(clickCount > 0):
+    if(clickCount > 0 and isFirst):
         connectionSocket, clientAddress = server.accept()
         received = connectionSocket.recv(1024)
         receivedDecoded = received.decode()
