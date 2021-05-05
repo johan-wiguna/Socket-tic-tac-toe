@@ -22,12 +22,16 @@ rows, cols = (3, 3)
 arr = [[0 for i in range(cols)] for j in range(rows)]
 clickCount = 0
 roundCount = 1
-def check_turn():
-    if(int(roundCount)%2!=0):
+
+def check_first_turn():
+    global lStartFirst
+    if(int(roundCount)%2==0):
         return True
     else:
         return False
-clicked = check_turn() # True: Giliran X, False: Giliran O
+
+isFirst = check_first_turn() # True: X, False: O
+
 
 def check_win():
     #vertical
@@ -61,37 +65,25 @@ def check_win():
         return a
 
 def btn_clicked(b):
-    global clicked, clickCount, bRematch, score1, score2, lResult
+    global isFirst, clickCount, bRematch, score1, score2, lResult
     if b["text"] == "":
-        if clicked == True:
-            #b["text"] = "X"
-            #b["fg"] = "blue"
-            #clicked = False
-            #clickCount += 1
-            #row = b.grid_info()['row']-2
-            #column = b.grid_info()['column']
-            #arr[row][column] = 1
-            #print(arr)
-
-            #strIdx = str(row) + " " + str(column)
-            #strIdxEncoded = strIdx.encode("UTF-8")
-            #print("strIdx: ", strIdx)
-            #client.send(strIdxEncoded)
-            messagebox.showerror("Not your turn","Please wait")
+        if isFirst == True:
+            b["text"] = "X"
+            b["fg"] = "blue"
+            clickCount += 1
+            row = b.grid_info()['row']-2
+            column = b.grid_info()['column']
+            arr[row][column] = 1
+            print(arr)
+            # messagebox.showerror("Not your turn","Please wait until your next turn.")
         else:
             b["text"] = "O"
             b["fg"] = "red"
-            clicked = True
             clickCount += 1
             row = b.grid_info()['row']-2
             column = b.grid_info()['column']
             arr[row][column] = 2
             print(arr)
-
-            strIdx = str(row) + " " + str(column)
-            strIdxEncoded = strIdx.encode("UTF-8")
-            print("strIdx: ", strIdx)
-            client.send(strIdxEncoded)
 
         if(check_win()==1):
             print("player 1 win")
@@ -107,12 +99,18 @@ def btn_clicked(b):
             print("draw")
             lResult.config(text="Draw!")
             bRematch.config(state="normal", bg="red", fg="white")
+
+        strIdx = str(row) + " " + str(column)
+        strIdxEncoded = strIdx.encode("UTF-8")
+        print("strIdx: ", strIdx)
+        client.send(strIdxEncoded)
     else:
         messagebox.showerror("Misclicked", "Please click an empty box.")
 
 def rematch(b):
-    global clickCount, b0, b1, b2, b3, b4, b5, b6, b7, b8, lResult
+    global clickCount, roundCount, b0, b1, b2, b3, b4, b5, b6, b7, b8, lResult
     clickCount = 0
+    roundCount += 1
     lResult.config(text="")
     b.config(state="disabled", bg="SystemButtonFace")
 
@@ -139,7 +137,7 @@ root.title('[CLIENT] Tic Tac Toe')
 lYou = Label(root, text="You: 0", font=("Helvetica", 10))
 lEnemy = Label(root, text="Enemy: 0", font=("Helvetica", 10))
 lRound = Label(root, text="ROUND 0", font=("Helvetica", 10, "bold"))
-lStartFirst = Label(root, text="... start first (X)", font=("Helvetica", 10))
+lStartFirst = Label(root, text="", font=("Helvetica", 10))
 lResult = Label(root, text="", font=("Helvetica", 10, "bold"))
 
 lYou.grid(row=0, column=0)
@@ -147,6 +145,9 @@ lEnemy.grid(row=0, column=2)
 lRound.grid(row=0, column=1)
 lStartFirst.grid(row=1, column=1)
 lResult.grid(row=5, column=0, columnspan=3)
+
+if check_first_turn() == True: lStartFirst["text"] = "You start first (X)"
+else: lStartFirst["text"] = "Enemy start first (X)"
 
 # Button untuk setiap box
 b0 = Button(root, text="", font=("Helvetica", 20), height=3, width=7, bg="SystemButtonFace", command=lambda: btn_clicked(b0))

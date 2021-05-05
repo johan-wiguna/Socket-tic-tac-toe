@@ -18,12 +18,15 @@ rows, cols = (3, 3)
 arr = [[0 for i in range(cols)] for j in range(rows)]
 clickCount = 0
 roundCount = 1
-def check_turn():
+
+def check_first_turn():
+    global lStartFirst
     if(int(roundCount)%2!=0):
         return True
     else:
         return False
-clicked = check_turn() # True: Giliran X, False: Giliran O
+
+isFirst = check_first_turn() # True: X, False: O
 
 def check_win():
     #vertical
@@ -57,50 +60,93 @@ def check_win():
         return a
 
 def btn_clicked(b):
-    global clicked, clickCount, bRematch, score1, score2, lResult
+    global isFirst, clickCount, bRematch, score1, score2, lResult
     if b["text"] == "":
-        if clicked == True:
+        if isFirst == True:
             b["text"] = "X"
             b["fg"] = "blue"
-            clicked = False
             clickCount += 1
             row = b.grid_info()['row']-2
             column = b.grid_info()['column']
             arr[row][column] = 1
             print(arr)
         else:
-            #b["text"] = "O"
-            #b["fg"] = "red"
-            #clicked = True
-            #clickCount += 1
-            #row = b.grid_info()['row']-2
-            #column = b.grid_info()['column']
-            #arr[row][column] = 2
-            #print(arr)
-            messagebox.showerror("Not your turn","Please wait")
+            b["text"] = "O"
+            b["fg"] = "red"
+            isFirst = True
+            clickCount += 1
+            row = b.grid_info()['row']-2
+            column = b.grid_info()['column']
+            arr[row][column] = 2
+            print(arr)
+            # messagebox.showerror("Not your turn","Please wait until your next turn.")
 
         if(check_win()==1):
             print("player 1 win")
             score1 += 1
+            lResult.config(text="Player 1 win!")
             bRematch.config(state="normal", bg="red", fg="white")
         elif(check_win()==2):
             print("player 2 win")
             score2 += 1
+            lResult.config(text="Player 2 win!")
             bRematch.config(state="normal", bg="red", fg="white")
         elif(clickCount==9):
             print("draw")
+            lResult.config(text="Draw!")
             bRematch.config(state="normal", bg="red", fg="white")
     else:
         messagebox.showerror("Misclicked", "Please click an empty box.")
     
-    connectionSocket, clientAddress = server.accept()
-    received = connectionSocket.recv(4096)
-    receivedDecoded = received.decode()
-    print("From client: ", received.decode())
-    rowReceived = receivedDecoded[0]
-    columnReceived = receivedDecoded[2]
-    print("rowReceived: ", rowReceived)
-    print("columnReceived: ", columnReceived)
+    if(check_first_turn == True):
+        connectionSocket, clientAddress = server.accept()
+        received = connectionSocket.recv(1024)
+        receivedDecoded = received.decode()
+        print("From client: ", received.decode())
+        rowReceived = receivedDecoded[0]
+        columnReceived = receivedDecoded[2]
+        print("rowReceived: ", rowReceived)
+        print("columnReceived: ", columnReceived)
+        clickCount += 1
+
+        arr[int(rowReceived)][int(columnReceived)] = 2
+        if rowReceived == 0:
+            if columnReceived == 0: b0.config(text="O", fg="red")
+            elif columnReceived == 1: b1.config(text="O", fg="red")
+            elif columnReceived == 2: b2.config(text="O", fg="red")
+        elif rowReceived == 1:
+            if columnReceived == 0: b3.config(text="O", fg="red")
+            elif columnReceived == 1: b4.config(text="O", fg="red")
+            elif columnReceived == 2: b5.config(text="O", fg="red")
+        elif rowReceived == 2:
+            if columnReceived == 0: b6.config(text="O", fg="red")
+            elif columnReceived == 1: b7.config(text="O", fg="red")
+            elif columnReceived == 2: b8.config(text="O", fg="red")
+                
+    
+
+def rematch(b):
+    global clickCount, roundCount, b0, b1, b2, b3, b4, b5, b6, b7, b8, lResult
+    clickCount = 0
+    roundCount += 1
+    lResult.config(text="")
+    b.config(state="disabled", bg="SystemButtonFace")
+
+    b0.config(text="")
+    b1.config(text="")
+    b2.config(text="")
+
+    b3.config(text="")
+    b4.config(text="")
+    b5.config(text="")
+
+    b6.config(text="")
+    b7.config(text="")
+    b8.config(text="")
+
+    for i in range(len(arr)):
+        for j in range(len(arr)):
+            arr[i][j] = 0
 
 root = Tk()
 root.title('[SERVER] Tic Tac Toe')
@@ -108,7 +154,7 @@ root.title('[SERVER] Tic Tac Toe')
 lYou = Label(root, text="You: 0", font=("Helvetica", 10))
 lEnemy = Label(root, text="Enemy: 0", font=("Helvetica", 10))
 lRound = Label(root, text="ROUND 0", font=("Helvetica", 10, "bold"))
-lStartFirst = Label(root, text="... start first (X)", font=("Helvetica", 10))
+lStartFirst = Label(root, text="", font=("Helvetica", 10))
 lResult = Label(root, text="", font=("Helvetica", 10, "bold"))
 
 lYou.grid(row=0, column=0)
@@ -116,6 +162,9 @@ lEnemy.grid(row=0, column=2)
 lRound.grid(row=0, column=1)
 lStartFirst.grid(row=1, column=1)
 lResult.grid(row=5, column=0, columnspan=3)
+
+if check_first_turn() == True: lStartFirst["text"] = "You start first (X)"
+else: lStartFirst["text"] = "Enemy start first (X)"
 
 # Button untuk setiap box
 b0 = Button(root, text="", font=("Helvetica", 20), height=3, width=7, bg="SystemButtonFace", command=lambda: btn_clicked(b0))
@@ -143,8 +192,8 @@ b6.grid(row=4, column=0)
 b7.grid(row=4, column=1)
 b8.grid(row=4, column=2)
 
-bRematch = Button(root, text="REMATCH", font=("Helvetica", 12), width=40, state=DISABLED)
+bRematch = Button(root, text="REMATCH", font=("Helvetica", 12), width=40, state=DISABLED, command=lambda: rematch(bRematch))
 
-bRematch.grid(row=5, column=0, columnspan=3)
+bRematch.grid(row=6, column=0, columnspan=3)
 
 root.mainloop()
