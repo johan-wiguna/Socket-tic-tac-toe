@@ -66,21 +66,23 @@ def define_winner():
     if(check_win()==1):
         score1 += 1
         lResult.config(text="Player 1 win!")
-        lScore1.config(text="P1: " + str(score1))
+        lScore1.config(text="P1 (You): " + str(score1))
         bRematch.config(state="normal", bg="red", fg="white")
     elif(check_win()==2):
         score2 += 1
         lResult.config(text="Player 2 win!")
-        lScore1.config(text="P2 (You): " + str(score2))
+        lScore2.config(text="P2: " + str(score2))
         bRematch.config(state="normal", bg="red", fg="white")
     elif(clickCount==9):
         score1 += 1
         score2 += 1
         lResult.config(text="Draw!")
+        lScore1.config(text="P1 (You): " + str(score1))
+        lScore2.config(text="P2: " + str(score2))
         bRematch.config(state="normal", bg="red", fg="white")
 
 def btn_clicked(b):
-    global isFirst, clickCount, bRematch, score1, score2, lResult
+    global isFirst, clickCount, bRematch, lResult
     if(isFirst==True and clickCount%2==0) or (isFirst==False and clickCount%2!=0):
         if b["text"] == "":
             if isFirst == True:
@@ -99,7 +101,6 @@ def btn_clicked(b):
                 column = b.grid_info()['column']
                 arr[row][column] = 2
                 print(arr)
-                # messagebox.showerror("Not your turn","Please wait until your next turn.")
 
             define_winner()
             
@@ -218,6 +219,7 @@ def receiveThread(server):
                 elif columnReceived == 2: b8.config(text="O", fg="red")
             
             define_winner()
+            
 
 start_new_thread(receiveThread, (server,))
 root.mainloop()
