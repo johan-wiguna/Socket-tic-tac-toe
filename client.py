@@ -71,13 +71,13 @@ def define_winner():
         score1 += 1
         lResult.config(text="Player 1 win!")
         lScore1.config(text="P1: " + str(score1))
-        bRematch.config(state="normal", bg="red", fg="white")
+        bRematch.config(state="normal", bg="green", fg="white")
         winner = 1
     elif(check_win()==2):
         score2 += 1
         lResult.config(text="Player 2 win!")
         lScore2.config(text="P2 (You): " + str(score2))
-        bRematch.config(state="normal", bg="red", fg="white")
+        bRematch.config(state="normal", bg="green", fg="white")
         winner = 2
     elif(clickCount==9):
         score1 += 1
@@ -85,12 +85,12 @@ def define_winner():
         lResult.config(text="Draw!")
         lScore1.config(text="P1: " + str(score1))
         lScore2.config(text="P2 (You): " + str(score2))
-        bRematch.config(state="normal", bg="red", fg="white")
+        bRematch.config(state="normal", bg="green", fg="white")
 
 def btn_clicked(b):
     global client, isFirst, clickCount, bRematch, lResult, winner
     if(winner!=0):
-        messagebox.showerror("Error", "Please start new game")
+        messagebox.showinfo("Game over", "If you wish to play again, please click the Rematch button.")
     elif(isFirst==True and clickCount%2==0) or (isFirst==False and clickCount%2!=0):
         if b["text"] == "":
             if isFirst == True:
@@ -117,7 +117,7 @@ def btn_clicked(b):
             print("strIdx: ", strIdx)
             client.send(strIdxEncoded)
         else: messagebox.showerror("Misclicked", "Please click an empty box.")
-    else: messagebox.showerror("Opponent's turn", "Please for your next turn.")
+    else: messagebox.showerror("Opponent's turn", "Please wait for your next turn.")
 
 def rematch(b, stat):
     global clickCount, roundCount, score1, score2, winner, isFirst, b0, b1, b2, b3, b4, b5, b6, b7, b8, lResult, lRound, lScore1, lScore2
