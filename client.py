@@ -20,9 +20,14 @@ score1 = 0
 score2 = 0
 rows, cols = (3, 3)
 arr = [[0 for i in range(cols)] for j in range(rows)]
-clicked = True # True: Giliran X, False: Giliran O
 clickCount = 0
 roundCount = 1
+def check_turn():
+    if(int(roundCount)%2!=0):
+        return True
+    else:
+        return False
+clicked = check_turn() # True: Giliran X, False: Giliran O
 
 def check_win():
     #vertical
@@ -59,19 +64,20 @@ def btn_clicked(b):
     global clicked, clickCount, bRematch, score1, score2, lResult
     if b["text"] == "":
         if clicked == True:
-            b["text"] = "X"
-            b["fg"] = "blue"
-            clicked = False
-            clickCount += 1
-            row = b.grid_info()['row']-2
-            column = b.grid_info()['column']
-            arr[row][column] = 1
-            print(arr)
+            #b["text"] = "X"
+            #b["fg"] = "blue"
+            #clicked = False
+            #clickCount += 1
+            #row = b.grid_info()['row']-2
+            #column = b.grid_info()['column']
+            #arr[row][column] = 1
+            #print(arr)
 
-            strIdx = str(row) + " " + str(column)
-            strIdxEncoded = strIdx.encode("UTF-8")
-            print("strIdx: ", strIdx)
-            client.send(strIdxEncoded)
+            #strIdx = str(row) + " " + str(column)
+            #strIdxEncoded = strIdx.encode("UTF-8")
+            #print("strIdx: ", strIdx)
+            #client.send(strIdxEncoded)
+            messagebox.showerror("Not your turn","Please wait")
         else:
             b["text"] = "O"
             b["fg"] = "red"
