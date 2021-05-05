@@ -1,3 +1,5 @@
+# Dibuat oleh Vicky Ricardo (6181801011) & Johan Adi Wiguna (6181801018)
+
 import socket
 from _thread import *
 from tkinter import *
@@ -9,12 +11,6 @@ ADDR = (HOST, PORT)
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(ADDR)
-# sent = input("Sentence: ")
-# message = sent.encode("UTF-8")
-# client.send(message)
-# print("Dikirim ke server untuk dibuat jadi huruf besar: ", message.decode())
-# modifiedSentence = client.recv(1024)
-# print("Diterima dari server: ", modifiedSentence.decode())
 
 winner = 0
 score1 = 0 
@@ -159,7 +155,7 @@ root.resizable(0, 0)
 lScore1 = Label(root, text="P1: 0", font=("Helvetica", 10))
 lScore2 = Label(root, text="P2 (You): 0", font=("Helvetica", 10))
 lRound = Label(root, text="ROUND 1", font=("Helvetica", 10, "bold"))
-lStartFirst = Label(root, text="", font=("Helvetica", 10))
+lStartFirst = Label(root, text="", font=("Helvetica", 10), bg="PeachPuff2", width=45)
 lResult = Label(root, text="", font=("Helvetica", 10, "bold"))
 
 lScore1.grid(row=0, column=0)

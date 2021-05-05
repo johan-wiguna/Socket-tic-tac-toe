@@ -1,3 +1,5 @@
+# Dibuat oleh Vicky Ricardo (6181801011) & Johan Adi Wiguna (6181801018)
+
 import socket
 from _thread import *
 from tkinter import *
@@ -155,7 +157,7 @@ root.resizable(0, 0)
 lScore1 = Label(root, text="P1 (You): 0", font=("Helvetica", 10))
 lScore2 = Label(root, text="P2: 0", font=("Helvetica", 10))
 lRound = Label(root, text="ROUND 1", font=("Helvetica", 10, "bold"))
-lStartFirst = Label(root, text="", font=("Helvetica", 10))
+lStartFirst = Label(root, text="", font=("Helvetica", 10), bg="Khaki", width=45)
 lResult = Label(root, text="", font=("Helvetica", 10, "bold"))
 
 lScore1.grid(row=0, column=0)
