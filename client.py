@@ -2,27 +2,104 @@ import socket
 from tkinter import *
 from tkinter import messagebox
 
-LOCALHOST = socket.gethostbyname(socket.gethostname())
+HOST = socket.gethostbyname(socket.gethostname())
 PORT = 5050
-ADDR = (LOCALHOST, PORT)
+ADDR = (HOST, PORT)
 
+client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client.connect(ADDR)
+# sent = input("Sentence: ")
+# message = sent.encode("UTF-8")
+# client.send(message)
+# print("Dikirim ke server untuk dibuat jadi huruf besar: ", message.decode())
+# modifiedSentence = client.recv(1024)
+# print("Diterima dari server: ", modifiedSentence.decode())
+
+
+score1 = 0 
+score2 = 0
+rows, cols = (3, 3)
+arr = [[0 for i in range(cols)] for j in range(rows)]
 clicked = True # True: Giliran X, False: Giliran O
 clickCount = 0
-roundCount = 0
+roundCount = 1
+
+def check_win():
+    #vertical
+    for i in range(len(arr)):
+        a = arr[i][0]
+        b = arr[i][1]
+        c = arr[i][2]
+        if((a==b) and (b==c) and a != 0):
+            return a
+    
+    #horizontal
+    for i in range(len(arr)):
+        a = arr[0][i]
+        b = arr[1][i]
+        c = arr[2][i]
+        if((a==b) and (b==c) and a != 0):
+            return a
+
+    #diagonal \
+    a = arr[0][0]
+    b = arr[1][1]
+    c = arr[2][2]
+    if((a==b) and (b==c) and a != 0):
+        return a
+
+    #diagonal /
+    a = arr[0][2]
+    b = arr[1][1]
+    c = arr[2][0]
+    if((a==b) and (b==c) and a != 0):
+        return a
 
 def btn_clicked(b):
-    global clicked, clickCount
+    global clicked, clickCount, bRematch, score1, score2, client
     if b["text"] == "":
         if clicked == True:
             b["text"] = "X"
             b["fg"] = "blue"
             clicked = False
             clickCount += 1
+            row = b.grid_info()['row']-2
+            column = b.grid_info()['column']
+            arr[row][column] = 1
+            print(arr)
+
+            strIdx = str(row) + " " + str(column)
+            strIdxEncoded = strIdx.encode("UTF-8")
+            print("strIdx: ", strIdx)
+            client.send(strIdxEncoded)
+            client.close()
         else:
             b["text"] = "O"
             b["fg"] = "red"
             clicked = True
             clickCount += 1
+            row = b.grid_info()['row']-2
+            column = b.grid_info()['column']
+            arr[row][column] = 2
+            print(arr)
+
+            strIdx = str(row) + " " + str(column)
+            strIdxEncoded = strIdx.encode("UTF-8")
+            print("strIdx: ", strIdx)
+            client.send(strIdxEncoded)
+            client.close()
+
+        if(check_win()==1):
+            print("player 1 win")
+            score1 += 1
+            bRematch.config(state="normal", bg="red", fg="white")
+        elif(check_win()==2):
+            print("player 2 win")
+            score2 += 1
+            bRematch.config(state="normal", bg="red", fg="white")
+        elif(clickCount==9):
+            print("draw")
+            bRematch.config(state="normal", bg="red", fg="white")
     else:
         messagebox.showerror("Misclicked", "Please click an empty box.")
 
@@ -70,10 +147,3 @@ bRematch = Button(root, text="REMATCH", font=("Helvetica", 12), width=40, state=
 bRematch.grid(row=5, column=0, columnspan=3)
 
 root.mainloop()
-
-while True:
-    event, values = window.read()
-    if event == sg.WIN_CLOSED:
-        break
-    
-window.close()

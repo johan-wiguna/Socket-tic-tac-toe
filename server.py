@@ -2,14 +2,22 @@ import socket
 from tkinter import *
 from tkinter import messagebox
 
-LOCALHOST = socket.gethostbyname(socket.gethostname())
+HOST = socket.gethostbyname(socket.gethostname())
 PORT = 5050
-ADDR = (LOCALHOST, PORT)
+ADDR = (HOST, PORT)
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 server.bind(ADDR)
+server.listen(1)
 print("[Server is starting...]")
+
+
+connectionSocket, clientAddress = server.accept()
+received = connectionSocket.recv(4096)
+print("From client: ", received.decode())
+connectionSocket.send(received)
+connectionSocket.close()
 
 score1 = 0 
 score2 = 0
@@ -130,13 +138,3 @@ bRematch = Button(root, text="REMATCH", font=("Helvetica", 12), width=40, state=
 bRematch.grid(row=5, column=0, columnspan=3)
 
 root.mainloop()
-
-
-while True:
-    if event == sg.WIN_CLOSED:
-        break
-    server.listen(1)
-    clientsock, clientAddress = server.accept()
-    print(clientsock)
-    newthread = ClientThread(clientAddress, clientsock)
-    newthread.start()
