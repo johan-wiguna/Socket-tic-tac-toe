@@ -16,7 +16,7 @@ client.connect(ADDR)
 # modifiedSentence = client.recv(1024)
 # print("Diterima dari server: ", modifiedSentence.decode())
 
-
+winner = 0
 score1 = 0 
 score2 = 0
 rows, cols = (3, 3)
@@ -66,17 +66,19 @@ def check_win():
         return a
 
 def define_winner():
-    global score1, score2, lResult, bRematch, lScore1, lScore2
+    global score1, score2, lResult, bRematch, lScore1, lScore2, winner
     if(check_win()==1):
         score1 += 1
         lResult.config(text="Player 1 win!")
         lScore1.config(text="P1: " + str(score1))
         bRematch.config(state="normal", bg="red", fg="white")
+        winner = 1
     elif(check_win()==2):
         score2 += 1
         lResult.config(text="Player 2 win!")
         lScore2.config(text="P2 (You): " + str(score2))
         bRematch.config(state="normal", bg="red", fg="white")
+        winner = 2
     elif(clickCount==9):
         score1 += 1
         score2 += 1
@@ -86,16 +88,18 @@ def define_winner():
         bRematch.config(state="normal", bg="red", fg="white")
 
 def btn_clicked(b):
-    global client, isFirst, clickCount, bRematch, lResult
-    if(isFirst==True and clickCount%2==0) or (isFirst==False and clickCount%2!=0):
+    global client, isFirst, clickCount, bRematch, lResult, winner
+    if(winner!=0):
+        messagebox.showerror("Error", "Please start new game")
+    elif(isFirst==True and clickCount%2==0) or (isFirst==False and clickCount%2!=0):
         if b["text"] == "":
             if isFirst == True:
-                b["text"] = "X"
-                b["fg"] = "blue"
+                b["text"] = "O"
+                b["fg"] = "red"
                 clickCount += 1
                 row = b.grid_info()['row']-2
                 column = b.grid_info()['column']
-                arr[row][column] = 1
+                arr[row][column] = 2
                 print(arr)
             else:
                 b["text"] = "O"
@@ -116,10 +120,11 @@ def btn_clicked(b):
     else: messagebox.showerror("Opponent's turn", "Please for your next turn.")
 
 def rematch(b, stat):
-    global clickCount, roundCount, score1, score2, b0, b1, b2, b3, b4, b5, b6, b7, b8, lResult, lRound, lScore1, lScore2
+    global clickCount, roundCount, score1, score2, winner, isFirst, b0, b1, b2, b3, b4, b5, b6, b7, b8, lResult, lRound, lScore1, lScore2
     clickCount = 0
     roundCount += 1
-
+    winner = 0
+    isFirst = check_first_turn()
     lResult["text"] = ""
     lRound["text"] = "ROUND " + str(roundCount)
     lScore1["text"] = "P1: " + str(score1)
@@ -142,7 +147,9 @@ def rematch(b, stat):
     for i in range(len(arr)):
         for j in range(len(arr)):
             arr[i][j] = 0
-    
+
+    if (check_first_turn()): lStartFirst["text"] = "You start first (You: O)"
+    else: lStartFirst["text"] = "Opponent start first (You: O)"
     if stat!="req": client.send("rematch".encode("UTF-8"))
 
 root = Tk()
@@ -161,7 +168,7 @@ lRound.grid(row=0, column=1)
 lStartFirst.grid(row=1, column=0, columnspan=3)
 lResult.grid(row=5, column=0, columnspan=3)
 
-if check_first_turn() == True: lStartFirst["text"] = "You start first (You: X)"
+if (check_first_turn()): lStartFirst["text"] = "You start first (You: X)"
 else: lStartFirst["text"] = "Opponent start first (You: O)"
 
 # Button untuk setiap box
@@ -195,7 +202,7 @@ bRematch = Button(root, text="REMATCH", font=("Helvetica", 12), width=40, state=
 bRematch.grid(row=6, column=0, columnspan=3)
 
 def receiveThread(client):
-    global clickCount, connectionSocket, bRematch
+    global clickCount, connectionSocket, bRematch, winner
     while True:
         received = client.recv(1024)
         receivedDecoded = received.decode()
@@ -222,16 +229,6 @@ def receiveThread(client):
                 elif columnReceived == 1: b7.config(text="X", fg="blue")
                 elif columnReceived == 2: b8.config(text="X", fg="blue")
             
-            if(check_win()==1):
-                lResult.config(text="Player 1 win!")
-                bRematch.config(state="normal", bg="red", fg="white")
-            elif(check_win()==2):
-                lResult.config(text="Player 2 win!")
-                bRematch.config(state="normal", bg="red", fg="white")
-            elif(clickCount==9):
-                lResult.config(text="Draw!")
-                bRematch.config(state="normal", bg="red", fg="white")
-
             define_winner()
 
 start_new_thread(receiveThread, (client,))

@@ -13,7 +13,7 @@ server.bind(ADDR)
 server.listen(1)
 print("[Server is starting...]")
 connectionSocket, clientAddress = server.accept()
-
+winner = 0
 score1 = 0 
 score2 = 0
 rows, cols = (3, 3)
@@ -62,17 +62,19 @@ def check_win():
         return a
 
 def define_winner():
-    global score1, score2, lResult, bRematch, lScore1, lScore2
+    global score1, score2, lResult, bRematch, lScore1, lScore2, winner
     if(check_win()==1):
         score1 += 1
         lResult.config(text="Player 1 win!")
         lScore1.config(text="P1 (You): " + str(score1))
         bRematch.config(state="normal", bg="red", fg="white")
+        winner = 1
     elif(check_win()==2):
         score2 += 1
         lResult.config(text="Player 2 win!")
         lScore2.config(text="P2: " + str(score2))
         bRematch.config(state="normal", bg="red", fg="white")
+        winner = 2
     elif(clickCount==9):
         score1 += 1
         score2 += 1
@@ -82,8 +84,10 @@ def define_winner():
         bRematch.config(state="normal", bg="red", fg="white")
 
 def btn_clicked(b):
-    global isFirst, clickCount, bRematch, lResult
-    if(isFirst==True and clickCount%2==0) or (isFirst==False and clickCount%2!=0):
+    global isFirst, clickCount, bRematch, lResult, winner
+    if(winner!=0):
+        messagebox.showerror("Error", "Please start new game")
+    elif(isFirst==True and clickCount%2==0) or (isFirst==False and clickCount%2!=0):
         if b["text"] == "":
             if isFirst == True:
                 b["text"] = "X"
@@ -94,12 +98,12 @@ def btn_clicked(b):
                 arr[row][column] = 1
                 print(arr)
             else:
-                b["text"] = "O" 
-                b["fg"] = "red"
+                b["text"] = "X" 
+                b["fg"] = "blue"
                 clickCount += 1
                 row = b.grid_info()['row']-2
                 column = b.grid_info()['column']
-                arr[row][column] = 2
+                arr[row][column] = 1
                 print(arr)
 
             define_winner()
@@ -112,10 +116,11 @@ def btn_clicked(b):
     else: messagebox.showerror("Opponent's turn", "Please for your next turn.")
 
 def rematch(b, stat):
-    global clickCount, roundCount, score1, score2, b0, b1, b2, b3, b4, b5, b6, b7, b8, lResult, lRound, lScore1, lScore2
+    global clickCount, roundCount, score1, score2, winner,isFirst, b0, b1, b2, b3, b4, b5, b6, b7, b8, lResult, lRound, lScore1, lScore2
     clickCount = 0
     roundCount += 1
-
+    winner = 0
+    isFirst = check_first_turn()
     lResult["text"] = ""
     lRound["text"] = "ROUND " + str(roundCount)
     lScore1["text"] = "P1 (You): " + str(score1)
@@ -138,7 +143,9 @@ def rematch(b, stat):
     for i in range(len(arr)):
         for j in range(len(arr)):
             arr[i][j] = 0
-    
+
+    if (check_first_turn()): lStartFirst["text"] = "You start first (You: X)"
+    else: lStartFirst["text"] = "Opponent start first (You: X)"
     if stat!="req": connectionSocket.send("rematch".encode("UTF-8"))
 
 root = Tk()
@@ -157,7 +164,7 @@ lRound.grid(row=0, column=1)
 lStartFirst.grid(row=1, column=0, columnspan=3)
 lResult.grid(row=5, column=0, columnspan=3)
 
-if check_first_turn() == True: lStartFirst["text"] = "You start first (You: X)"
+if (check_first_turn()): lStartFirst["text"] = "You start first (You: X)"
 else: lStartFirst["text"] = "Opponent start first (You: O)"
 
 # Button untuk setiap box
@@ -191,7 +198,7 @@ bBeginTurn = Button(root, text="BEGIN TURN", font=("Helvetica", 12), width=40, s
 bRematch.grid(row=6, column=0, columnspan=3)
 
 def receiveThread(server):
-    global clickCount, connectionSocket, bRematch
+    global clickCount, connectionSocket, bRematch, winner
     while True:
         received = connectionSocket.recv(1024)
         receivedDecoded = received.decode()
