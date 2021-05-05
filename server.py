@@ -13,6 +13,7 @@ server.bind(ADDR)
 server.listen(1)
 print("[Server is starting...]")
 connectionSocket, clientAddress = server.accept()
+
 score1 = 0 
 score2 = 0
 rows, cols = (3, 3)
@@ -61,26 +62,25 @@ def check_win():
         return a
 
 def define_winner():
-    global score1, score2, lResult, bRematch
+    global score1, score2, lResult, bRematch, lScore1, lScore2
     if(check_win()==1):
-        print("player 1 win")
         score1 += 1
         lResult.config(text="Player 1 win!")
+        lScore1.config(text="P1: " + str(score1))
         bRematch.config(state="normal", bg="red", fg="white")
     elif(check_win()==2):
-        print("player 2 win")
         score2 += 1
-        lResult.config(text="Player 1 win!")
+        lResult.config(text="Player 2 win!")
+        lScore1.config(text="P2 (You): " + str(score2))
         bRematch.config(state="normal", bg="red", fg="white")
     elif(clickCount==9):
-        print("draw")
         score1 += 1
         score2 += 1
         lResult.config(text="Draw!")
         bRematch.config(state="normal", bg="red", fg="white")
 
 def btn_clicked(b):
-    global isFirst, clickCount, bRematch, score1, score2, lResult, b0, b1, b2, b3, b4, b5, b6, b7, b8
+    global isFirst, clickCount, bRematch, score1, score2, lResult
     if(isFirst==True and clickCount%2==0) or (isFirst==False and clickCount%2!=0):
         if b["text"] == "":
             if isFirst == True:
@@ -94,7 +94,6 @@ def btn_clicked(b):
             else:
                 b["text"] = "O" 
                 b["fg"] = "red"
-                isFirst = True
                 clickCount += 1
                 row = b.grid_info()['row']-2
                 column = b.grid_info()['column']

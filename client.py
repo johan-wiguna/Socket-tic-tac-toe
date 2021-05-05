@@ -66,19 +66,18 @@ def check_win():
         return a
 
 def define_winner():
-    global score1, score2, lResult, bRematch
+    global score1, score2, lResult, bRematch, lScore1, lScore2
     if(check_win()==1):
-        print("player 1 win")
         score1 += 1
         lResult.config(text="Player 1 win!")
+        lScore1.config(text="P1: " + str(score1))
         bRematch.config(state="normal", bg="red", fg="white")
     elif(check_win()==2):
-        print("player 2 win")
         score2 += 1
-        lResult.config(text="Player 1 win!")
+        lResult.config(text="Player 2 win!")
+        lScore1.config(text="P2 (You): " + str(score2))
         bRematch.config(state="normal", bg="red", fg="white")
     elif(clickCount==9):
-        print("draw")
         score1 += 1
         score2 += 1
         lResult.config(text="Draw!")
@@ -116,7 +115,7 @@ def btn_clicked(b):
     else: messagebox.showerror("Opponent's turn", "Please for your next turn.")
 
 def rematch(b, stat):
-    global clickCount, roundCount,score1, score2, b0, b1, b2, b3, b4, b5, b6, b7, b8, lResult, lRound, lScore1, lScore2
+    global clickCount, roundCount, score1, score2, b0, b1, b2, b3, b4, b5, b6, b7, b8, lResult, lRound, lScore1, lScore2
     clickCount = 0
     roundCount += 1
 
