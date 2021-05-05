@@ -65,6 +65,25 @@ def check_win():
     if((a==b) and (b==c) and a != 0):
         return a
 
+def define_winner():
+    global score1, score2, lResult, bRematch
+    if(check_win()==1):
+        print("player 1 win")
+        score1 += 1
+        lResult.config(text="Player 1 win!")
+        bRematch.config(state="normal", bg="red", fg="white")
+    elif(check_win()==2):
+        print("player 2 win")
+        score2 += 1
+        lResult.config(text="Player 1 win!")
+        bRematch.config(state="normal", bg="red", fg="white")
+    elif(clickCount==9):
+        print("draw")
+        score1 += 1
+        score2 += 1
+        lResult.config(text="Draw!")
+        bRematch.config(state="normal", bg="red", fg="white")
+
 def btn_clicked(b):
     global client, isFirst, clickCount, bRematch, score1, score2, lResult
     if(isFirst==True and clickCount%2==0) or (isFirst==False and clickCount%2!=0):
@@ -86,23 +105,8 @@ def btn_clicked(b):
                 column = b.grid_info()['column']
                 arr[row][column] = 2
                 print(arr)
-
-            if(check_win()==1):
-                print("player 1 win")
-                score1 += 1
-                lResult.config(text="Player 1 win!")
-                bRematch.config(state="normal", bg="red", fg="white")
-            elif(check_win()==2):
-                print("player 2 win")
-                score2 += 1
-                lResult.config(text="Player 1 win!")
-                bRematch.config(state="normal", bg="red", fg="white")
-            elif(clickCount==9):
-                print("draw")
-                score1 += 1
-                score2 += 2
-                lResult.config(text="Draw!")
-                bRematch.config(state="normal", bg="red", fg="white")
+            
+            define_winner()
 
             strIdx = str(row) + " " + str(column)
             strIdxEncoded = strIdx.encode("UTF-8")
@@ -111,14 +115,14 @@ def btn_clicked(b):
         else: messagebox.showerror("Misclicked", "Please click an empty box.")
     else: messagebox.showerror("Opponent's turn", "Please for your next turn.")
 
-def rematch(b):
-    global clickCount, roundCount,score1, score2, b0, b1, b2, b3, b4, b5, b6, b7, b8, lResult, lRound
+def rematch(b, stat):
+    global clickCount, roundCount,score1, score2, b0, b1, b2, b3, b4, b5, b6, b7, b8, lResult, lRound, lScore1, lScore2
     clickCount = 0
     roundCount += 1
 
     lResult["text"] = ""
     lRound["text"] = "ROUND " + str(roundCount)
-    lScore2["text"] = "P1: " + str(score1)
+    lScore1["text"] = "P1: " + str(score1)
     lScore2["text"] = "P2 (You): " + str(score2)
 
     b.config(state="disabled", bg="SystemButtonFace")
@@ -139,35 +143,7 @@ def rematch(b):
         for j in range(len(arr)):
             arr[i][j] = 0
     
-    client.send("rematch".encode("UTF-8"))
-
-def requested_rematch(b):
-    global clickCount, roundCount, score1, score2, b0, b1, b2, b3, b4, b5, b6, b7, b8, lResult, lRound, lScore1, lScore2
-    clickCount = 0
-    roundCount += 1
-
-    lResult["text"] = ""
-    lRound["text"] = "ROUND " + str(roundCount)
-    lScore1["text"] = "P1 (You): " + str(score1)
-    lScore2["text"] = "P2: " + str(score2)
-    
-    b.config(state="disabled", bg="SystemButtonFace")
-
-    b0.config(text="")
-    b1.config(text="")
-    b2.config(text="")
-
-    b3.config(text="")
-    b4.config(text="")
-    b5.config(text="")
-
-    b6.config(text="")
-    b7.config(text="")
-    b8.config(text="")
-
-    for i in range(len(arr)):
-        for j in range(len(arr)):
-            arr[i][j] = 0
+    if stat!="req": client.send("rematch".encode("UTF-8"))
 
 root = Tk()
 root.title('[CLIENT] Tic Tac Toe')
@@ -214,7 +190,7 @@ b6.grid(row=4, column=0)
 b7.grid(row=4, column=1)
 b8.grid(row=4, column=2)
 
-bRematch = Button(root, text="REMATCH", font=("Helvetica", 12), width=40, state=DISABLED, command=lambda: rematch(bRematch))
+bRematch = Button(root, text="REMATCH", font=("Helvetica", 12), width=40, state=DISABLED, command=lambda: rematch(bRematch, ""))
 
 bRematch.grid(row=6, column=0, columnspan=3)
 
@@ -224,7 +200,7 @@ def receiveThread(server):
         received = client.recv(1024)
         receivedDecoded = received.decode()
         print("From server: ", received.decode())
-        if receivedDecoded == "rematch": requested_rematch(bRematch)
+        if receivedDecoded == "rematch": rematch(bRematch, "req")
         else:
             rowReceived = int(receivedDecoded[0])
             columnReceived = int(receivedDecoded[2])

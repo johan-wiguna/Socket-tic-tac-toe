@@ -60,6 +60,25 @@ def check_win():
     if((a==b) and (b==c) and a != 0):
         return a
 
+def define_winner():
+    global score1, score2, lResult, bRematch
+    if(check_win()==1):
+        print("player 1 win")
+        score1 += 1
+        lResult.config(text="Player 1 win!")
+        bRematch.config(state="normal", bg="red", fg="white")
+    elif(check_win()==2):
+        print("player 2 win")
+        score2 += 1
+        lResult.config(text="Player 1 win!")
+        bRematch.config(state="normal", bg="red", fg="white")
+    elif(clickCount==9):
+        print("draw")
+        score1 += 1
+        score2 += 1
+        lResult.config(text="Draw!")
+        bRematch.config(state="normal", bg="red", fg="white")
+
 def btn_clicked(b):
     global isFirst, clickCount, bRematch, score1, score2, lResult, b0, b1, b2, b3, b4, b5, b6, b7, b8
     if(isFirst==True and clickCount%2==0) or (isFirst==False and clickCount%2!=0):
@@ -83,22 +102,7 @@ def btn_clicked(b):
                 print(arr)
                 # messagebox.showerror("Not your turn","Please wait until your next turn.")
 
-            if(check_win()==1):
-                print("player 1 win")
-                score1 += 1
-                lResult.config(text="Player 1 win!")
-                bRematch.config(state="normal", bg="red", fg="white")
-            elif(check_win()==2):
-                print("player 2 win")
-                score2 += 1
-                lResult.config(text="Player 2 win!")
-                bRematch.config(state="normal", bg="red", fg="white")
-            elif(clickCount==9):
-                print("draw")
-                score1 += 1
-                score2 += 2
-                lResult.config(text="Draw!")
-                bRematch.config(state="normal", bg="red", fg="white")
+            define_winner()
             
             strIdx = str(row) + " " + str(column)
             strIdxEncoded = strIdx.encode("UTF-8")
@@ -107,7 +111,7 @@ def btn_clicked(b):
         else: messagebox.showerror("Misclicked", "Please click an empty box.")
     else: messagebox.showerror("Opponent's turn", "Please for your next turn.")
 
-def rematch(b):
+def rematch(b, stat):
     global clickCount, roundCount, score1, score2, b0, b1, b2, b3, b4, b5, b6, b7, b8, lResult, lRound, lScore1, lScore2
     clickCount = 0
     roundCount += 1
@@ -135,35 +139,7 @@ def rematch(b):
         for j in range(len(arr)):
             arr[i][j] = 0
     
-    connectionSocket.send("rematch".encode("UTF-8"))
-
-def requested_rematch(b):
-    global clickCount, roundCount, score1, score2, b0, b1, b2, b3, b4, b5, b6, b7, b8, lResult, lRound, lScore1, lScore2
-    clickCount = 0
-    roundCount += 1
-
-    lResult["text"] = ""
-    lRound["text"] = "ROUND " + str(roundCount)
-    lScore1["text"] = "P1 (You): " + str(score1)
-    lScore2["text"] = "P2: " + str(score2)
-    
-    b.config(state="disabled", bg="SystemButtonFace")
-
-    b0.config(text="")
-    b1.config(text="")
-    b2.config(text="")
-
-    b3.config(text="")
-    b4.config(text="")
-    b5.config(text="")
-
-    b6.config(text="")
-    b7.config(text="")
-    b8.config(text="")
-
-    for i in range(len(arr)):
-        for j in range(len(arr)):
-            arr[i][j] = 0
+    if stat!="req": connectionSocket.send("rematch".encode("UTF-8"))
 
 root = Tk()
 root.title('[SERVER] Tic Tac Toe')
@@ -210,7 +186,7 @@ b6.grid(row=4, column=0)
 b7.grid(row=4, column=1)
 b8.grid(row=4, column=2)
 
-bRematch = Button(root, text="REMATCH", font=("Helvetica", 12), width=40, state=DISABLED, command=lambda: rematch(bRematch))
+bRematch = Button(root, text="REMATCH", font=("Helvetica", 12), width=40, state=DISABLED, command=lambda: rematch(bRematch, ""))
 bBeginTurn = Button(root, text="BEGIN TURN", font=("Helvetica", 12), width=40, state=DISABLED, command=lambda: update_grid(bBeginTurn))
 bRematch.grid(row=6, column=0, columnspan=3)
 
@@ -220,7 +196,7 @@ def receiveThread(server):
         received = connectionSocket.recv(1024)
         receivedDecoded = received.decode()
         print("From client: ", received.decode())
-        if receivedDecoded == "rematch": requested_rematch(bRematch)
+        if receivedDecoded == "rematch": rematch(bRematch, "req")
         else:
             rowReceived = int(receivedDecoded[0])
             columnReceived = int(receivedDecoded[2])
@@ -242,17 +218,7 @@ def receiveThread(server):
                 elif columnReceived == 1: b7.config(text="O", fg="red")
                 elif columnReceived == 2: b8.config(text="O", fg="red")
             
-            check_win()
-            if(check_win()==1):
-                lResult.config(text="Player 1 win!")
-                bRematch.config(state="normal", bg="red", fg="white")
-            elif(check_win()==2):
-                lResult.config(text="Player 2 win!")
-                bRematch.config(state="normal", bg="red", fg="white")
-            elif(clickCount==9):
-                print("draw")
-                lResult.config(text="Draw!")
-                bRematch.config(state="normal", bg="red", fg="white")
+            define_winner()
 
 start_new_thread(receiveThread, (server,))
 root.mainloop()
