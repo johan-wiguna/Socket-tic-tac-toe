@@ -136,6 +136,8 @@ def rematch(b):
     for i in range(len(arr)):
         for j in range(len(arr)):
             arr[i][j] = 0
+    
+    client.send("rematch".encode("UTF-8"))
 
 
 root = Tk()
