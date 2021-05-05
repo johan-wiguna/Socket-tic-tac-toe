@@ -62,54 +62,59 @@ def check_win():
 
 def btn_clicked(b):
     global isFirst, clickCount, bRematch, score1, score2, lResult, b0, b1, b2, b3, b4, b5, b6, b7, b8
+    if(isFirst==True and clickCount%2==0) or (isFirst==False and clickCount%2!=0):
+        if b["text"] == "":
+            if isFirst == True:
+                b["text"] = "X"
+                b["fg"] = "blue"
+                clickCount += 1
+                row = b.grid_info()['row']-2
+                column = b.grid_info()['column']
+                arr[row][column] = 1
+                print(arr)
+            else:
+                b["text"] = "O" 
+                b["fg"] = "red"
+                isFirst = True
+                clickCount += 1
+                row = b.grid_info()['row']-2
+                column = b.grid_info()['column']
+                arr[row][column] = 2
+                print(arr)
+                # messagebox.showerror("Not your turn","Please wait until your next turn.")
 
-    if b["text"] == "":
-        if isFirst == True:
-            b["text"] = "X"
-            b["fg"] = "blue"
-            clickCount += 1
-            row = b.grid_info()['row']-2
-            column = b.grid_info()['column']
-            arr[row][column] = 1
-            print(arr)
-        else:
-            b["text"] = "O"
-            b["fg"] = "red"
-            isFirst = True
-            clickCount += 1
-            row = b.grid_info()['row']-2
-            column = b.grid_info()['column']
-            arr[row][column] = 2
-            print(arr)
-            # messagebox.showerror("Not your turn","Please wait until your next turn.")
-
-        if(check_win()==1):
-            print("player 1 win")
-            score1 += 1
-            lResult.config(text="Player 1 win!")
-            bRematch.config(state="normal", bg="red", fg="white")
-        elif(check_win()==2):
-            print("player 2 win")
-            score2 += 1
-            lResult.config(text="Player 2 win!")
-            bRematch.config(state="normal", bg="red", fg="white")
-        elif(clickCount==9):
-            print("draw")
-            lResult.config(text="Draw!")
-            bRematch.config(state="normal", bg="red", fg="white")
-        
-        strIdx = str(row) + " " + str(column)
-        strIdxEncoded = strIdx.encode("UTF-8")
-        print("strIdx: ", strIdx)
-        connectionSocket.send(strIdxEncoded)
-    else:
-        messagebox.showerror("Misclicked", "Please click an empty box.")
+            if(check_win()==1):
+                print("player 1 win")
+                score1 += 1
+                lResult.config(text="Player 1 win!")
+                bRematch.config(state="normal", bg="red", fg="white")
+            elif(check_win()==2):
+                print("player 2 win")
+                score2 += 1
+                lResult.config(text="Player 2 win!")
+                bRematch.config(state="normal", bg="red", fg="white")
+            elif(clickCount==9):
+                print("draw")
+                lResult.config(text="Draw!")
+                bRematch.config(state="normal", bg="red", fg="white")
+            
+            strIdx = str(row) + " " + str(column)
+            strIdxEncoded = strIdx.encode("UTF-8")
+            print("strIdx: ", strIdx)
+            connectionSocket.send(strIdxEncoded)
+        else: messagebox.showerror("Misclicked", "Please click an empty box.")
+    else: messagebox.showerror("Opponent's turn", "Please for your next turn.")
 
 def rematch(b):
-    global clickCount, roundCount, b0, b1, b2, b3, b4, b5, b6, b7, b8, lResult
+    global clickCount, roundCount, score1, score2, b0, b1, b2, b3, b4, b5, b6, b7, b8, lResult, lRound, lScore1, lScore2
     clickCount = 0
     roundCount += 1
-    lResult.config(text="")
+
+    lResult["text"] = ""
+    lRound["text"] = "ROUND " + str(roundCount)
+    lScore1["text"] = "P1 (You): " + str(score1)
+    lScore2["text"] = "P2: " + str(score2)
+    
     b.config(state="disabled", bg="SystemButtonFace")
 
     b0.config(text="")
@@ -132,14 +137,14 @@ root = Tk()
 root.title('[SERVER] Tic Tac Toe')
 root.resizable(0, 0)
 
-lYou = Label(root, text="You: 0", font=("Helvetica", 10))
-lEnemy = Label(root, text="Enemy: 0", font=("Helvetica", 10))
-lRound = Label(root, text="ROUND 0", font=("Helvetica", 10, "bold"))
+lScore1 = Label(root, text="P1 (You): 0", font=("Helvetica", 10))
+lScore2 = Label(root, text="P2: 0", font=("Helvetica", 10))
+lRound = Label(root, text="ROUND 1", font=("Helvetica", 10, "bold"))
 lStartFirst = Label(root, text="", font=("Helvetica", 10))
 lResult = Label(root, text="", font=("Helvetica", 10, "bold"))
 
-lYou.grid(row=0, column=0)
-lEnemy.grid(row=0, column=2)
+lScore1.grid(row=0, column=0)
+lScore2.grid(row=0, column=2)
 lRound.grid(row=0, column=1)
 lStartFirst.grid(row=1, column=0, columnspan=3)
 lResult.grid(row=5, column=0, columnspan=3)
@@ -202,6 +207,7 @@ def receiveThread(server):
             if columnReceived == 0: b6.config(text="O", fg="red")
             elif columnReceived == 1: b7.config(text="O", fg="red")
             elif columnReceived == 2: b8.config(text="O", fg="red")
+        check_win()
 
 start_new_thread(receiveThread, (server,))
 root.mainloop()
