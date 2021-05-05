@@ -12,7 +12,7 @@ server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 server.bind(ADDR)
 server.listen(1)
 print("[Server is starting...]")
-
+connectionSocket, clientAddress = server.accept()
 score1 = 0 
 score2 = 0
 rows, cols = (3, 3)
@@ -97,12 +97,11 @@ def btn_clicked(b):
             print("draw")
             lResult.config(text="Draw!")
             bRematch.config(state="normal", bg="red", fg="white")
-        connectionSocket, clientAddress = server.accept()
+        #connectionSocket, clientAddress = server.accept()
         strIdx = str(row) + " " + str(column)
         strIdxEncoded = strIdx.encode("UTF-8")
         print("strIdx: ", strIdx)
         connectionSocket.send(strIdxEncoded)
-        connectionSocket.close()
     else:
         messagebox.showerror("Misclicked", "Please click an empty box.")
 
@@ -179,9 +178,9 @@ bBeginTurn = Button(root, text="BEGIN TURN", font=("Helvetica", 12), width=40, s
 bRematch.grid(row=6, column=0, columnspan=3)
 
 def receiveThread(server):
-    global clickCount
+    global clickCount, connectionSocket
     while True:
-        connectionSocket, clientAddress = server.accept()
+        #connectionSocket, clientAddress = server.accept()
         received = connectionSocket.recv(1024)
         receivedDecoded = received.decode()
         print("From client: ", received.decode())
