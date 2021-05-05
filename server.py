@@ -12,13 +12,6 @@ server.bind(ADDR)
 server.listen(1)
 print("[Server is starting...]")
 
-
-connectionSocket, clientAddress = server.accept()
-received = connectionSocket.recv(4096)
-print("From client: ", received.decode())
-connectionSocket.send(received)
-connectionSocket.close()
-
 score1 = 0 
 score2 = 0
 rows, cols = (3, 3)
@@ -59,7 +52,7 @@ def check_win():
         return a
 
 def btn_clicked(b):
-    global clicked, clickCount, bRematch, score1, score2
+    global clicked, clickCount, bRematch, score1, score2, lResult
     if b["text"] == "":
         if clicked == True:
             b["text"] = "X"
@@ -93,19 +86,30 @@ def btn_clicked(b):
             bRematch.config(state="normal", bg="red", fg="white")
     else:
         messagebox.showerror("Misclicked", "Please click an empty box.")
+    
+    connectionSocket, clientAddress = server.accept()
+    received = connectionSocket.recv(4096)
+    receivedDecoded = received.decode()
+    print("From client: ", received.decode())
+    rowReceived = receivedDecoded[0]
+    columnReceived = receivedDecoded[2]
+    print("rowReceived: ", rowReceived)
+    print("columnReceived: ", columnReceived)
 
 root = Tk()
 root.title('[SERVER] Tic Tac Toe')
 
-lYou = Label(root, text="You: ...", font=("Helvetica", 10))
-lEnemy = Label(root, text="Enemy: ...", font=("Helvetica", 10))
-lRound = Label(root, text="ROUND ...", font=("Helvetica", 10, "bold"))
+lYou = Label(root, text="You: 0", font=("Helvetica", 10))
+lEnemy = Label(root, text="Enemy: 0", font=("Helvetica", 10))
+lRound = Label(root, text="ROUND 0", font=("Helvetica", 10, "bold"))
 lStartFirst = Label(root, text="... start first (X)", font=("Helvetica", 10))
+lResult = Label(root, text="", font=("Helvetica", 10, "bold"))
 
 lYou.grid(row=0, column=0)
 lEnemy.grid(row=0, column=2)
 lRound.grid(row=0, column=1)
 lStartFirst.grid(row=1, column=1)
+lResult.grid(row=5, column=0, columnspan=3)
 
 # Button untuk setiap box
 b0 = Button(root, text="", font=("Helvetica", 20), height=3, width=7, bg="SystemButtonFace", command=lambda: btn_clicked(b0))

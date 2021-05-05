@@ -56,7 +56,7 @@ def check_win():
         return a
 
 def btn_clicked(b):
-    global clicked, clickCount, bRematch, score1, score2, client
+    global clicked, clickCount, bRematch, score1, score2, lResult
     if b["text"] == "":
         if clicked == True:
             b["text"] = "X"
@@ -72,7 +72,6 @@ def btn_clicked(b):
             strIdxEncoded = strIdx.encode("UTF-8")
             print("strIdx: ", strIdx)
             client.send(strIdxEncoded)
-            client.close()
         else:
             b["text"] = "O"
             b["fg"] = "red"
@@ -87,34 +86,61 @@ def btn_clicked(b):
             strIdxEncoded = strIdx.encode("UTF-8")
             print("strIdx: ", strIdx)
             client.send(strIdxEncoded)
-            client.close()
 
         if(check_win()==1):
             print("player 1 win")
             score1 += 1
+            lResult.config(text="Player 1 win!")
             bRematch.config(state="normal", bg="red", fg="white")
         elif(check_win()==2):
             print("player 2 win")
             score2 += 1
+            lResult.config(text="Player 1 win!")
             bRematch.config(state="normal", bg="red", fg="white")
         elif(clickCount==9):
             print("draw")
+            lResult.config(text="Draw!")
             bRematch.config(state="normal", bg="red", fg="white")
     else:
         messagebox.showerror("Misclicked", "Please click an empty box.")
 
+def rematch(b):
+    global clickCount, b0, b1, b2, b3, b4, b5, b6, b7, b8, lResult
+    clickCount = 0
+    lResult.config(text="")
+    b.config(state="disabled", bg="SystemButtonFace")
+
+    b0.config(text="")
+    b1.config(text="")
+    b2.config(text="")
+
+    b3.config(text="")
+    b4.config(text="")
+    b5.config(text="")
+
+    b6.config(text="")
+    b7.config(text="")
+    b8.config(text="")
+
+    for i in range(len(arr)):
+        for j in range(len(arr)):
+            arr[i][j] = 0
+
+
 root = Tk()
 root.title('[CLIENT] Tic Tac Toe')
 
-lYou = Label(root, text="You: ...", font=("Helvetica", 10))
-lEnemy = Label(root, text="Enemy: ...", font=("Helvetica", 10))
-lRound = Label(root, text="ROUND ...", font=("Helvetica", 10, "bold"))
+lYou = Label(root, text="You: 0", font=("Helvetica", 10))
+lEnemy = Label(root, text="Enemy: 0", font=("Helvetica", 10))
+lRound = Label(root, text="ROUND 0", font=("Helvetica", 10, "bold"))
 lStartFirst = Label(root, text="... start first (X)", font=("Helvetica", 10))
+lResult = Label(root, text="", font=("Helvetica", 10, "bold"))
 
 lYou.grid(row=0, column=0)
 lEnemy.grid(row=0, column=2)
 lRound.grid(row=0, column=1)
 lStartFirst.grid(row=1, column=1)
+lResult.grid(row=5, column=0, columnspan=3)
 
 # Button untuk setiap box
 b0 = Button(root, text="", font=("Helvetica", 20), height=3, width=7, bg="SystemButtonFace", command=lambda: btn_clicked(b0))
@@ -142,8 +168,8 @@ b6.grid(row=4, column=0)
 b7.grid(row=4, column=1)
 b8.grid(row=4, column=2)
 
-bRematch = Button(root, text="REMATCH", font=("Helvetica", 12), width=40, state=DISABLED)
+bRematch = Button(root, text="REMATCH", font=("Helvetica", 12), width=40, state=DISABLED, command=lambda: rematch(bRematch))
 
-bRematch.grid(row=5, column=0, columnspan=3)
+bRematch.grid(row=6, column=0, columnspan=3)
 
 root.mainloop()
