@@ -65,7 +65,7 @@ def check_win():
         return a
 
 def btn_clicked(b):
-    global isFirst, clickCount, bRematch, score1, score2, lResult
+    global client, isFirst, clickCount, bRematch, score1, score2, lResult
     if b["text"] == "":
         if isFirst == True:
             b["text"] = "X"
@@ -133,6 +133,7 @@ def rematch(b):
 
 root = Tk()
 root.title('[CLIENT] Tic Tac Toe')
+root.resizable(0, 0)
 
 lYou = Label(root, text="You: 0", font=("Helvetica", 10))
 lEnemy = Label(root, text="Enemy: 0", font=("Helvetica", 10))
@@ -143,11 +144,11 @@ lResult = Label(root, text="", font=("Helvetica", 10, "bold"))
 lYou.grid(row=0, column=0)
 lEnemy.grid(row=0, column=2)
 lRound.grid(row=0, column=1)
-lStartFirst.grid(row=1, column=1)
+lStartFirst.grid(row=1, column=0, columnspan=3)
 lResult.grid(row=5, column=0, columnspan=3)
 
-if check_first_turn() == True: lStartFirst["text"] = "You start first (X)"
-else: lStartFirst["text"] = "Enemy start first (X)"
+if check_first_turn() == True: lStartFirst["text"] = "You start first (You: X)"
+else: lStartFirst["text"] = "Opponent start first (You: O)"
 
 # Button untuk setiap box
 b0 = Button(root, text="", font=("Helvetica", 20), height=3, width=7, bg="SystemButtonFace", command=lambda: btn_clicked(b0))
