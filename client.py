@@ -99,6 +99,8 @@ def btn_clicked(b):
                 bRematch.config(state="normal", bg="red", fg="white")
             elif(clickCount==9):
                 print("draw")
+                score1 += 1
+                score2 += 2
                 lResult.config(text="Draw!")
                 bRematch.config(state="normal", bg="red", fg="white")
 
@@ -139,6 +141,33 @@ def rematch(b):
     
     client.send("rematch".encode("UTF-8"))
 
+def requested_rematch(b):
+    global clickCount, roundCount, score1, score2, b0, b1, b2, b3, b4, b5, b6, b7, b8, lResult, lRound, lScore1, lScore2
+    clickCount = 0
+    roundCount += 1
+
+    lResult["text"] = ""
+    lRound["text"] = "ROUND " + str(roundCount)
+    lScore1["text"] = "P1 (You): " + str(score1)
+    lScore2["text"] = "P2: " + str(score2)
+    
+    b.config(state="disabled", bg="SystemButtonFace")
+
+    b0.config(text="")
+    b1.config(text="")
+    b2.config(text="")
+
+    b3.config(text="")
+    b4.config(text="")
+    b5.config(text="")
+
+    b6.config(text="")
+    b7.config(text="")
+    b8.config(text="")
+
+    for i in range(len(arr)):
+        for j in range(len(arr)):
+            arr[i][j] = 0
 
 root = Tk()
 root.title('[CLIENT] Tic Tac Toe')
@@ -195,7 +224,7 @@ def receiveThread(server):
         received = client.recv(1024)
         receivedDecoded = received.decode()
         print("From server: ", received.decode())
-        if receivedDecoded == "rematch": rematch(bRematch)
+        if receivedDecoded == "rematch": requested_rematch(bRematch)
         else:
             rowReceived = int(receivedDecoded[0])
             columnReceived = int(receivedDecoded[2])
@@ -216,7 +245,16 @@ def receiveThread(server):
                 if columnReceived == 0: b6.config(text="X", fg="blue")
                 elif columnReceived == 1: b7.config(text="X", fg="blue")
                 elif columnReceived == 2: b8.config(text="X", fg="blue")
-            check_win()
+            
+            if(check_win()==1):
+                lResult.config(text="Player 1 win!")
+                bRematch.config(state="normal", bg="red", fg="white")
+            elif(check_win()==2):
+                lResult.config(text="Player 2 win!")
+                bRematch.config(state="normal", bg="red", fg="white")
+            elif(clickCount==9):
+                lResult.config(text="Draw!")
+                bRematch.config(state="normal", bg="red", fg="white")
 
 start_new_thread(receiveThread, (client,))
 root.mainloop()
