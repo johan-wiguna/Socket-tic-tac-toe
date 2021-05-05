@@ -132,6 +132,8 @@ def rematch(b):
     for i in range(len(arr)):
         for j in range(len(arr)):
             arr[i][j] = 0
+    
+    connectionSocket.send("rematch".encode("UTF-8"))
 
 root = Tk()
 root.title('[SERVER] Tic Tac Toe')
@@ -183,31 +185,33 @@ bBeginTurn = Button(root, text="BEGIN TURN", font=("Helvetica", 12), width=40, s
 bRematch.grid(row=6, column=0, columnspan=3)
 
 def receiveThread(server):
-    global clickCount, connectionSocket
+    global clickCount, connectionSocket, bRematch
     while True:
         received = connectionSocket.recv(1024)
         receivedDecoded = received.decode()
         print("From client: ", received.decode())
-        rowReceived = int(receivedDecoded[0])
-        columnReceived = int(receivedDecoded[2])
-        print("rowReceived: ", rowReceived)
-        print("columnReceived: ", columnReceived)
-        clickCount += 1
+        if receivedDecoded == "rematch": rematch(bRematch)
+        else:
+            rowReceived = int(receivedDecoded[0])
+            columnReceived = int(receivedDecoded[2])
+            print("rowReceived: ", rowReceived)
+            print("columnReceived: ", columnReceived)
+            clickCount += 1
 
-        arr[rowReceived][columnReceived] = 2
-        if rowReceived == 0:
-            if columnReceived == 0: b0.config(text="O", fg="red")
-            elif columnReceived == 1: b1.config(text="O", fg="red")
-            elif columnReceived == 2: b2.config(text="O", fg="red")
-        elif rowReceived == 1:
-            if columnReceived == 0: b3.config(text="O", fg="red")
-            elif columnReceived == 1: b4.config(text="O", fg="red")
-            elif columnReceived == 2: b5.config(text="O", fg="red")
-        elif rowReceived == 2:
-            if columnReceived == 0: b6.config(text="O", fg="red")
-            elif columnReceived == 1: b7.config(text="O", fg="red")
-            elif columnReceived == 2: b8.config(text="O", fg="red")
-        check_win()
+            arr[rowReceived][columnReceived] = 2
+            if rowReceived == 0:
+                if columnReceived == 0: b0.config(text="O", fg="red")
+                elif columnReceived == 1: b1.config(text="O", fg="red")
+                elif columnReceived == 2: b2.config(text="O", fg="red")
+            elif rowReceived == 1:
+                if columnReceived == 0: b3.config(text="O", fg="red")
+                elif columnReceived == 1: b4.config(text="O", fg="red")
+                elif columnReceived == 2: b5.config(text="O", fg="red")
+            elif rowReceived == 2:
+                if columnReceived == 0: b6.config(text="O", fg="red")
+                elif columnReceived == 1: b7.config(text="O", fg="red")
+                elif columnReceived == 2: b8.config(text="O", fg="red")
+            check_win()
 
 start_new_thread(receiveThread, (server,))
 root.mainloop()
