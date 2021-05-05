@@ -60,7 +60,32 @@ def check_win():
         return a
 
 def btn_clicked(b):
-    global isFirst, clickCount, bRematch, score1, score2, lResult
+    global isFirst, clickCount, bRematch, score1, score2, lResult, b0, b1, b2, b3, b4, b5, b6, b7, b8
+    if(clickCount > 0):
+        connectionSocket, clientAddress = server.accept()
+        received = connectionSocket.recv(1024)
+        receivedDecoded = received.decode()
+        print("From client: ", received.decode())
+        rowReceived = int(receivedDecoded[0])
+        columnReceived = int(receivedDecoded[2])
+        print("rowReceived: ", rowReceived)
+        print("columnReceived: ", columnReceived)
+        clickCount += 1
+
+        arr[rowReceived][columnReceived] = 2
+        if rowReceived == 0:
+            if columnReceived == 0: b0.config(text="O", fg="red")
+            elif columnReceived == 1: b1.config(text="O", fg="red")
+            elif columnReceived == 2: b2.config(text="O", fg="red")
+        elif rowReceived == 1:
+            if columnReceived == 0: b3.config(text="O", fg="red")
+            elif columnReceived == 1: b4.config(text="O", fg="red")
+            elif columnReceived == 2: b5.config(text="O", fg="red")
+        elif rowReceived == 2:
+            if columnReceived == 0: b6.config(text="O", fg="red")
+            elif columnReceived == 1: b7.config(text="O", fg="red")
+            elif columnReceived == 2: b8.config(text="O", fg="red")
+
     if b["text"] == "":
         if isFirst == True:
             b["text"] = "X"
@@ -98,30 +123,7 @@ def btn_clicked(b):
     else:
         messagebox.showerror("Misclicked", "Please click an empty box.")
     
-    if(check_first_turn == True):
-        connectionSocket, clientAddress = server.accept()
-        received = connectionSocket.recv(1024)
-        receivedDecoded = received.decode()
-        print("From client: ", received.decode())
-        rowReceived = receivedDecoded[0]
-        columnReceived = receivedDecoded[2]
-        print("rowReceived: ", rowReceived)
-        print("columnReceived: ", columnReceived)
-        clickCount += 1
 
-        arr[int(rowReceived)][int(columnReceived)] = 2
-        if rowReceived == 0:
-            if columnReceived == 0: b0.config(text="O", fg="red")
-            elif columnReceived == 1: b1.config(text="O", fg="red")
-            elif columnReceived == 2: b2.config(text="O", fg="red")
-        elif rowReceived == 1:
-            if columnReceived == 0: b3.config(text="O", fg="red")
-            elif columnReceived == 1: b4.config(text="O", fg="red")
-            elif columnReceived == 2: b5.config(text="O", fg="red")
-        elif rowReceived == 2:
-            if columnReceived == 0: b6.config(text="O", fg="red")
-            elif columnReceived == 1: b7.config(text="O", fg="red")
-            elif columnReceived == 2: b8.config(text="O", fg="red")
                 
     
 
