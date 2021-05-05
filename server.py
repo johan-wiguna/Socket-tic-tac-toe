@@ -97,11 +97,12 @@ def btn_clicked(b):
             print("draw")
             lResult.config(text="Draw!")
             bRematch.config(state="normal", bg="red", fg="white")
-
-        # strIdx = str(row) + " " + str(column)
-        # strIdxEncoded = strIdx.encode("UTF-8")
-        # print("strIdx: ", strIdx)
-        # connectionSocket.send(strIdxEncoded)
+        connectionSocket, clientAddress = server.accept()
+        strIdx = str(row) + " " + str(column)
+        strIdxEncoded = strIdx.encode("UTF-8")
+        print("strIdx: ", strIdx)
+        connectionSocket.send(strIdxEncoded)
+        connectionSocket.close()
     else:
         messagebox.showerror("Misclicked", "Please click an empty box.")
 
