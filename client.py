@@ -1,4 +1,5 @@
 import socket
+from _thread import *
 from tkinter import *
 from tkinter import messagebox
 
@@ -180,4 +181,31 @@ bRematch = Button(root, text="REMATCH", font=("Helvetica", 12), width=40, state=
 
 bRematch.grid(row=6, column=0, columnspan=3)
 
+def receiveThread(server):
+    global clickCount, connectionSocket
+    while True:
+        received = client.recv(1024)
+        receivedDecoded = received.decode()
+        print("From server: ", received.decode())
+        rowReceived = int(receivedDecoded[0])
+        columnReceived = int(receivedDecoded[2])
+        print("rowReceived: ", rowReceived)
+        print("columnReceived: ", columnReceived)
+        clickCount += 1
+
+        arr[rowReceived][columnReceived] = 1
+        if rowReceived == 0:
+            if columnReceived == 0: b0.config(text="X", fg="blue")
+            elif columnReceived == 1: b1.config(text="X", fg="blue")
+            elif columnReceived == 2: b2.config(text="X", fg="blue")
+        elif rowReceived == 1:
+            if columnReceived == 0: b3.config(text="X", fg="blue")
+            elif columnReceived == 1: b4.config(text="X", fg="blue")
+            elif columnReceived == 2: b5.config(text="X", fg="blue")
+        elif rowReceived == 2:
+            if columnReceived == 0: b6.config(text="X", fg="blue")
+            elif columnReceived == 1: b7.config(text="X", fg="blue")
+            elif columnReceived == 2: b8.config(text="X", fg="blue")
+
+start_new_thread(receiveThread, (client,))
 root.mainloop()

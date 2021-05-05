@@ -97,7 +97,7 @@ def btn_clicked(b):
             print("draw")
             lResult.config(text="Draw!")
             bRematch.config(state="normal", bg="red", fg="white")
-        #connectionSocket, clientAddress = server.accept()
+        
         strIdx = str(row) + " " + str(column)
         strIdxEncoded = strIdx.encode("UTF-8")
         print("strIdx: ", strIdx)
@@ -180,7 +180,6 @@ bRematch.grid(row=6, column=0, columnspan=3)
 def receiveThread(server):
     global clickCount, connectionSocket
     while True:
-        #connectionSocket, clientAddress = server.accept()
         received = connectionSocket.recv(1024)
         receivedDecoded = received.decode()
         print("From client: ", received.decode())
