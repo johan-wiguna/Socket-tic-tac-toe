@@ -206,6 +206,7 @@ def receiveThread(server):
         receivedDecoded = received.decode()
         print("From client: ", received.decode())
         if receivedDecoded == "rematch": rematch(bRematch, "req")
+        elif receivedDecoded == "quit": close_game()
         else:
             rowReceived = int(receivedDecoded[0])
             columnReceived = int(receivedDecoded[2])
@@ -231,4 +232,14 @@ def receiveThread(server):
             
 
 start_new_thread(receiveThread, (server,))
+
+def on_closing():
+    if messagebox.askokcancel("Quit game", "Are you sure you want to quit?"):
+        connectionSocket.send("quit".encode("UTF-8"))
+        root.destroy()
+
+def close_game():
+    root.destroy()
+
+root.protocol("WM_DELETE_WINDOW", on_closing)
 root.mainloop()
