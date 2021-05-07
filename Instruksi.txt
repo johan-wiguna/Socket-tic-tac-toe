@@ -1,0 +1,19 @@
+Tugas Besar JarKom - Membangun Aplikasi Jaringan (Tic Tac Toe)
+
+1. Jalankan kedua kode program (server.py, lalu client.py)
+
+2. Setelah kedua kode tersebut dijalankan, akan muncul 2 buah
+   window tempat permainan Tic Tac Toe dijalankan (masing-
+   masing pemain 1 window)
+
+3. Server akan bermain sebagai Player 1 (P1) dan Client akan
+   bermain sebagai Player 2 (P2)
+
+4. Tekan tombol Rematch jika ingin bermain kembali setelah
+   ronde selesai.
+
+5. Klik tombol close pada window untuk mengakhiri permainan.
+
+6. Selamat bermain! :D
+
+-- Dibuat oleh Vicky Ricardo & Johan Adi Wiguna --
