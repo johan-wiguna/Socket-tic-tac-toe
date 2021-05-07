@@ -20,11 +20,24 @@ arr = [[0 for i in range(cols)] for j in range(rows)]
 clickCount = 0
 roundCount = 1
 
+mySymbol = ""
+myColor = ""
+opSymbol = ""
+opColor = ""
+
 def check_first_turn():
-    global lStartFirst
+    global lStartFirst, mySymbol, myColor, opSymbol, opColor
     if(int(roundCount)%2==0):
+        mySymbol = "X"
+        myColor = "blue"
+        opSymbol = "O"
+        opColor = "Red"
         return True
     else:
+        mySymbol = "O"
+        myColor = "Red"
+        opSymbol = "X"
+        opColor = "Blue"
         return False
 
 isFirst = check_first_turn() # True: X, False: O
@@ -89,22 +102,13 @@ def btn_clicked(b):
         messagebox.showinfo("Game over", "If you wish to play again, please click the Rematch button.")
     elif(isFirst==True and clickCount%2==0) or (isFirst==False and clickCount%2!=0):
         if b["text"] == "":
-            if isFirst == True:
-                b["text"] = "O"
-                b["fg"] = "red"
-                clickCount += 1
-                row = b.grid_info()['row']-2
-                column = b.grid_info()['column']
-                arr[row][column] = 2
-                print(arr)
-            else:
-                b["text"] = "O"
-                b["fg"] = "red"
-                clickCount += 1
-                row = b.grid_info()['row']-2
-                column = b.grid_info()['column']
-                arr[row][column] = 2
-                print(arr)
+            b["text"] = mySymbol
+            b["fg"] = myColor
+            clickCount += 1
+            row = b.grid_info()['row']-2
+            column = b.grid_info()['column']
+            arr[row][column] = 2
+            print(arr)
             
             define_winner()
 
@@ -116,11 +120,12 @@ def btn_clicked(b):
     else: messagebox.showerror("Opponent's turn", "Please wait for your next turn.")
 
 def rematch(b, stat):
-    global clickCount, roundCount, score1, score2, winner, isFirst, b0, b1, b2, b3, b4, b5, b6, b7, b8, lResult, lRound, lScore1, lScore2
+    global clickCount, roundCount, score1, score2, winner, isFirst, b0, b1, b2, b3, b4, b5, b6, b7, b8, lResult, lRound, lScore1, lScore2, mySymbol
     clickCount = 0
     roundCount += 1
     winner = 0
     isFirst = check_first_turn()
+    print("mySymbol: " + mySymbol)
     lResult["text"] = ""
     lRound["text"] = "ROUND " + str(roundCount)
     lScore1["text"] = "P1: " + str(score1)
@@ -144,7 +149,7 @@ def rematch(b, stat):
         for j in range(len(arr)):
             arr[i][j] = 0
 
-    if (check_first_turn()): lStartFirst["text"] = "You start first (You: O)"
+    if (check_first_turn()): lStartFirst["text"] = "You start first (You: X)"
     else: lStartFirst["text"] = "Opponent start first (You: O)"
     if stat!="req": client.send("rematch".encode("UTF-8"))
 
@@ -214,17 +219,17 @@ def receiveThread(client):
 
             arr[rowReceived][columnReceived] = 1
             if rowReceived == 0:
-                if columnReceived == 0: b0.config(text="X", fg="blue")
-                elif columnReceived == 1: b1.config(text="X", fg="blue")
-                elif columnReceived == 2: b2.config(text="X", fg="blue")
+                if columnReceived == 0: b0.config(text=opSymbol, fg=opColor)
+                elif columnReceived == 1: b1.config(text=opSymbol, fg=opColor)
+                elif columnReceived == 2: b2.config(text=opSymbol, fg=opColor)
             elif rowReceived == 1:
-                if columnReceived == 0: b3.config(text="X", fg="blue")
-                elif columnReceived == 1: b4.config(text="X", fg="blue")
-                elif columnReceived == 2: b5.config(text="X", fg="blue")
+                if columnReceived == 0: b3.config(text=opSymbol, fg=opColor)
+                elif columnReceived == 1: b4.config(text=opSymbol, fg=opColor)
+                elif columnReceived == 2: b5.config(text=opSymbol, fg=opColor)
             elif rowReceived == 2:
-                if columnReceived == 0: b6.config(text="X", fg="blue")
-                elif columnReceived == 1: b7.config(text="X", fg="blue")
-                elif columnReceived == 2: b8.config(text="X", fg="blue")
+                if columnReceived == 0: b6.config(text=opSymbol, fg=opColor)
+                elif columnReceived == 1: b7.config(text=opSymbol, fg=opColor)
+                elif columnReceived == 2: b8.config(text=opSymbol, fg=opColor)
             
             define_winner()
 
